@@ -8,11 +8,7 @@ import { message } from './message.model';
 })
 export class MessagesComponent implements OnInit{
 
-  messages: message[] = [
-    // new message(1, 'test', 'this is a test msg', "blah"),
-    // new message(2, 'testaroot', 'i hate and love testing', "Francis"),
-    // new message(3, 'call me', 'i think you have my number', 'jenny')
-    ];
+  messages: message[] = [ ];
   
     constructor() {
     
