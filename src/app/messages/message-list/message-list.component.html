@@ -12,9 +12,8 @@
                         <!--Add tag to load the MessageItemComponent-->
                         <!-- *ngFor="let message of messages" [message]="message" (messageSelected)="onMessageSelected($event)" -->
                         <app-message-item *ngFor="let msg of messages" 
-                            [message]="message"
-                            (messageSelected)="onMessageSelected(message)">
-                            <p><strong>{{ msg.subject }}</strong>: {{ msg.msgText }} ({{ msg.sender }})</p>
+                            [message]="msg"
+                            (messageSelected)="onMessageSelected(msg)">
                         </app-message-item>
 
                     </div>
@@ -22,9 +21,9 @@
             </div>
             <div class="panel-footer">
                 <app-message-edit (messageAdded)="onAddMessage($event)">
-                    <div *ngfor="let msg of messages">
+                    <!-- <div *ngfor="let msg of messages">
                         <app-message-item [message]="msg"></app-message-item>
-                    </div>
+                    </div> -->
                 </app-message-edit>
                 <!--Add tag to load the MessageEditComponent-->
             </div>

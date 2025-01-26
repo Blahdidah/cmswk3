@@ -1,1 +1,2 @@
-<p>messages works!</p>
+<app-message-list [messages]="messages"></app-message-list>
+<app-message-edit (messageAdded)="onAddMessage($event)"></app-message-edit>

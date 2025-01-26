@@ -10,6 +10,7 @@ export class MessageItemComponent {
   @Input() message: message;
   @Output() messageSelected = new EventEmitter<void>();
 
+  
   onSelected() {
     this.messageSelected.emit();
   }
