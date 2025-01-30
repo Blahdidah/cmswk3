@@ -1,9 +1,15 @@
 <div class="row">
     <div class="col-md-5">
-        <!-- (DOCUMENT LIST COMPONENT HERE) -->
-         <app-document-list></app-document-list>
+         <app-document-list
+            (selectedDocumentEvent)="selectedDocument = $event"></app-document-list>
     </div>
     <div class="col-md-4">
-        <app-document-detail></app-document-detail>
+        <app-document-detail
+            *ngIf="selectedDocument; else phText"
+            [document]="selectedDocument"></app-document-detail>
+            
+            <ng-template #phText>
+                <p>this is place holder text.</p>
+            </ng-template>
     </div>
 </div>

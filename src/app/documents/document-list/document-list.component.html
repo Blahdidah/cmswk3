@@ -10,7 +10,7 @@
       <app-document-item 
       *ngFor="let documentEl of documents"
       [document]="documentEl"
-      ()="onSelected(documentEl)"></app-document-item>
+      (documentSelected)="onSelected(documentEl)"></app-document-item>
     </div>
   </div>
 

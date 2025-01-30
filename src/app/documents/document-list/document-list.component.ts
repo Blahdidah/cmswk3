@@ -8,10 +8,12 @@ import { document } from '../document.model';
 })
 export class DocumentListComponent {
   @Output() selectedDocumentEvent = new EventEmitter<document>();
+
   documents: document[] = [
-    new document(1, 'test name', 'description', 'url', null),
-    new document(2, 'The Care and Keeping of Cats', 'a document that explains how to care and keep cats', 'https://google.com', null),
-    ]
+    new document(1, '101 Ways to cook Ramen', 'A document that provides 101 ideas on how to cook ramen. Savor or sweet, ramen is a treat!', 'https://maruchan.com', null),
+    new document(2, 'The Care and Keeping of Cats', 'A document that explains how to care and keep cats', 'https://ittybittykitties.com', null),
+  ]
+  
   onSelected(document: document) {
     this.selectedDocumentEvent.emit(document);
   }

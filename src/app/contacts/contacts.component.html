@@ -7,6 +7,7 @@
     <app-contact-detail
         *ngIf="selectedContact; else infoText"
         [contact]="selectedContact"></app-contact-detail>
+        
         <ng-template #infoText>
             <p>Please Select a Contact</p>
         </ng-template>
