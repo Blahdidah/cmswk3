@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
 
@@ -6,6 +6,8 @@ import { MOCKCONTACTS } from './MOCKCONTACTS';
   providedIn: 'root'
 })
 export class ContactsService {
+  contactSelectedEvent = new EventEmitter<Contact>();
+
   private contacts: Contact[] = [];
 
   constructor() {
@@ -15,12 +17,13 @@ export class ContactsService {
   getContacts() {
     return this.contacts.slice();
   }
-// this seems like pseudo code?
-  getContact(id: string): Contact {
+
+  getContact(id: string): Contact | undefined {
     for (let contact of this.contacts) {
       if (contact.id === id) {
         return contact;
       }
     }
+    return undefined;
   }
 }
