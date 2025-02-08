@@ -25,10 +25,12 @@ export class MessageEditComponent {
     this.msgTextInputRef.nativeElement.value = '';
     console.log('Form cleared!');
   }
+
   onSendMessage() {
     const subject = this.subjectInputRef.nativeElement.value;
     const msgText = this.msgTextInputRef.nativeElement.value; 
-    const id = new Date().getTime();
+    const id = 'string';
+    //the line above needs fixing.
     const sender: string = this.currentSender;
     const newMessage = new message(id, subject, msgText, sender);
 
