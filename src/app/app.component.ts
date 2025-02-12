@@ -8,10 +8,4 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'cms';
 
-  loadedFeature = 'contact';
-
-  onNavigate(loadedfeature: string) {
-    console.log('feature switched to:', loadedfeature);
-    this.loadedFeature = loadedfeature;
-  }
 }
