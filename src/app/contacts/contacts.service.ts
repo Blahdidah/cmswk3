@@ -7,6 +7,7 @@ import { MOCKCONTACTS } from './MOCKCONTACTS';
 })
 export class ContactsService {
   contactSelectedEvent = new EventEmitter<Contact>();
+  contactChangedEvent = new EventEmitter<Contact[]>();
 
   private contacts: Contact[] = [];
 
@@ -25,5 +26,10 @@ export class ContactsService {
       }
     }
     return undefined;
+  }
+
+  deleteContact(contact: Contact) { 
+    this.contacts = this.contacts.filter(c => c.id !== contact.id);
+    this.contactChangedEvent.emit(this.contacts.slice());
   }
 }
