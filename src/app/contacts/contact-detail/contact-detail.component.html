@@ -5,7 +5,7 @@
                 <h3>{{contact.name}}</h3>
                 <img src="{{contact.imageUrl}}" alt="{{contact.name}}" style="max-height:100px">
                 <div class="pull-right">
-                <button class="btn btn-primary" type="button">Edit</button>
+                <button class="btn btn-primary" type="button" [routerLink]="['edit']">Edit</button>
                 &nbsp;
                 <button class="btn btn-danger" type="button">Delete</button>
                 </div>
