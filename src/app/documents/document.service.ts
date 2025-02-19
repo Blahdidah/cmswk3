@@ -1,14 +1,15 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
   private documents: document[] = []
-  documentSelectedEvent = new EventEmitter<document>();
-  documentChangedEvent = new EventEmitter<document[]>();
+  documentSelectedEvent = new Subject<document>();
+  documentChangedEvent = new Subject<document[]>();
 
   constructor() { 
     this.documents = MOCKDOCUMENTS;
@@ -37,6 +38,6 @@ export class DocumentService {
     }
 
     this.documents.splice(pos, 1); // Remove the document
-    this.documentChangedEvent.emit(this.documents.slice()); // Notify the app
+    this.documentChangedEvent.next(this.documents.slice()); // Notify the app
   }
 }
