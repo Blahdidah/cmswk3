@@ -7,11 +7,10 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class ContactsService {
+  private contacts: Contact[] = [];
   contactSelectedEvent = new Subject<Contact>();
   contactChangedEvent = new Subject<Contact[]>();
-  private maxContactId = this.getMaxId();
-
-  private contacts: Contact[] = [];
+  private maxContactId: number;
 
   constructor() {
     this.contacts = MOCKCONTACTS;
