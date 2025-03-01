@@ -46,10 +46,11 @@
               max="255" 
               required>
         </div>
-        <!--<div *ngIf="(name.invalid && name.touched) || (url.invalid && url.touched)" class="alert alert-danger">
-          The Document Title and Document URL are required fields.
-        </div>-->
       </div>
+        <div *ngIf="(name.invalid && name.touched) || (url.invalid && url.touched)" class="alert alert-danger">
+          The Document Title and Document URL are required fields.
+        </div>
+      
 
       <div class="row">
         <div class="col-xs-12 btn-toolbar">
