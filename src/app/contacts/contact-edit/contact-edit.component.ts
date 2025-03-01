@@ -65,4 +65,18 @@ export class ContactEditComponent implements OnInit {
   onDrop(event: any) {
     console.log('dropped contact:', event);
   }
+  isInvalidContact(newContact: Contact): boolean {
+    if (!newContact) {
+      return true;
+    }
+    if (this.contact && newContact.id === this.contact.id) {
+      return true;
+    }
+    for (let i = 0; i < this, this.groupContacts.length; i++){
+      if (newContact.id === this.groupContacts[i].id) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
