@@ -47,9 +47,9 @@
           <div class="row" 
             id="groupList" 
             style="min-height: 3rem;"
-            dnd-droppable 
+            dnd-droppable="true"
             dropZones="['contactGroup']" 
-            (onDropSuccess)="onDrop($event)">
+            (onDropSuccess)="addToGroup($event)">
 
             <div *ngFor="let contact of groupContacts; let i = index">
               <div>

@@ -62,9 +62,15 @@ export class ContactEditComponent implements OnInit {
     this.router.navigate(['/contacts'])
   }
 
-  onDrop(event: any) {
-    console.log('dropped contact:', event);
+  addToGroup($event: any) {
+    const selectedContact: Contact = $event.dragData;
+    const invalidGroupContact = this.isInvalidContact(selectedContact);
+    if (invalidGroupContact) {
+      return
+    }
+    this.groupContacts.push(selectedContact);
   }
+
   isInvalidContact(newContact: Contact): boolean {
     if (!newContact) {
       return true;
@@ -72,7 +78,7 @@ export class ContactEditComponent implements OnInit {
     if (this.contact && newContact.id === this.contact.id) {
       return true;
     }
-    for (let i = 0; i < this, this.groupContacts.length; i++){
+    for (let i = 0; i < this.groupContacts.length; i++){
       if (newContact.id === this.groupContacts[i].id) {
         return true;
       }
