@@ -61,4 +61,8 @@ export class ContactEditComponent implements OnInit {
   onCancel() {
     this.router.navigate(['/contacts'])
   }
+
+  onDrop(event: any) {
+    console.log('dropped contact:', event);
+  }
 }

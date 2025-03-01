@@ -28,6 +28,14 @@ export class ContactListComponent implements OnInit, OnDestroy{
     this.contactService.contactSelectedEvent.next(contact);
   }
 
+  isDragEnabled(contact: any): boolean{
+    return true;
+  }
+
+  onDragStart(contact: any) {
+    console.log('Drag Started for contact: ', contact);
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
