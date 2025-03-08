@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 import { Subject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,14 +12,14 @@ export class DocumentService {
   documentSelectedEvent = new Subject<document>();
   documentChangedEvent = new Subject<document[]>();
   private maxDocumentId: number;
-
-  constructor() { 
+  
+  constructor(private http: HttpClient) { 
     this.documents = MOCKDOCUMENTS;
     this.maxDocumentId = this.getMaxId();
   }
 
   getDocuments() {
-    return this.documents.slice();
+    return this.http.get<document[]>('https://blahs-doc-contacts-default-rtdb.firebaseio.com/documents.json')
   }
 
   getDocument(id: string): document{
@@ -29,19 +30,25 @@ export class DocumentService {
     }
   }
 
+  sortDocuments() {
+    this.documents.sort((a, b) => {
+      return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+    });
+  }
+
+  storeDocuments() {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const documentsJson = JSON.stringify(this.documents);
+
+    this.http.put('https://your-firebase-url/documents.json', documentsJson, { headers })
+      .subscribe(() => {
+        this.documentChangedEvent.next(this.documents.slice());
+      });
+  }
+
   deleteDocument(document: document) {
-    if (!document) {
-      return;
-    }
-
-    const pos = this.documents.indexOf(document);
-    if (pos < 0) {
-      return; 
-    }
-
-    this.documents.splice(pos, 1); 
-    const documentsListClone = this.documents.slice(); 
-    this.documentChangedEvent.next(documentsListClone); 
+    this.documents = this.documents.filter(d => d.id !== document.id);
+    this.storeDocuments(); 
   }
 
   getMaxId(): number {
@@ -56,31 +63,16 @@ export class DocumentService {
   }
 
   addDocument(newDocument: document) {
-    if (!newDocument) {
-      return;
-    }
-    this.maxDocumentId++
-    newDocument.id = this.maxDocumentId.toString();
-
     this.documents.push(newDocument);
-    const documentsListClone = this.documents.slice();
-    this.documentChangedEvent.next(documentsListClone);
+    this.storeDocuments();
   }
 
   updateDocument(originalDocument: document, newDocument: document) {
-    if (!originalDocument || !newDocument) {
-      return;
-    }
-    const pos = this.documents.indexOf(originalDocument);
-    if (pos < 0) {
-      return;
-    }
+    const pos = this.documents.findIndex(d => d.id === originalDocument.id);
+    if (pos < 0) return;
 
-    newDocument.id = originalDocument.id;
     this.documents[pos] = newDocument;
-
-    const documentsListClone = this.documents.slice();
-    this.documentChangedEvent.next(documentsListClone);
+    this.storeDocuments();
   }
 
 }

@@ -21,6 +21,8 @@ import { DropdownDirective } from './dropdown.directive';
 import { DocumentEditComponent } from './documents/document-edit/document-edit.component';
 import { ContactEditComponent } from './contacts/contact-edit/contact-edit.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ContactsFilterPipe } from './contacts/contacts-filter.pipe';
+import { HttpClientModule } from '@angular/common/http'
 
 
 @NgModule({
@@ -41,7 +43,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MessageEditComponent,
     DropdownDirective,
     DocumentEditComponent,
-    ContactEditComponent
+    ContactEditComponent,
+    ContactsFilterPipe
   ],
 
   imports: [
@@ -49,7 +52,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    DragDropModule
+    DragDropModule,
+    HttpClientModule
   ],
   
   providers: [],

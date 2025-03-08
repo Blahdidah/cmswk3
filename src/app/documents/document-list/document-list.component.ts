@@ -15,12 +15,12 @@ export class DocumentListComponent implements OnInit, OnDestroy{
   constructor(private documentService: DocumentService) { }
 
   ngOnInit() {
-    this.documents = this.documentService.getDocuments();
-    this.subscription = this.documentService.documentChangedEvent
-      .subscribe(
-        (documents: document[]) => {
-      this.documents = documents;
-    });
+    this.documentService.getDocuments().subscribe(
+      (documents: document[]) => {
+        this.documents = documents;
+        this.documentService.sortDocuments();
+      }
+    );
   }
 
   ngOnDestroy(): void {
