@@ -40,8 +40,8 @@ export class DocumentEditComponent implements OnInit{
     const newDocument = new document(
       value.id,
       value.name,
-      value.url,
       value.description,
+      value.url,
       value.children,
     );
 
