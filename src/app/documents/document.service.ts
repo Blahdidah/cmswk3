@@ -15,7 +15,7 @@ export class DocumentService {
   documentChangedEvent = new Subject<document[]>();
   private maxDocumentId: number;
   
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient) {
     // this.documents = MOCKDOCUMENTS;
     this.maxDocumentId = this.getMaxId();
   }
@@ -24,6 +24,7 @@ export class DocumentService {
     return this.http.get<document[]>('https://blahs-doc-contacts-default-rtdb.firebaseio.com/documents.json')
       .pipe(
         map((documents: document[]) => {
+          this.documents = documents;  // Add this line to actually store the documents
           this.maxDocumentId = this.getMaxId();
           documents.sort((a, b) => a.name.localeCompare(b.name));
           this.documentChangedEvent.next(documents);
@@ -37,12 +38,13 @@ export class DocumentService {
   }
 
 
-  getDocument(id: string): document{
-    for (let document of this.documents) {
-      if (document.id === id) {
-        return document;
-      }
+  getDocument(id: string): document | undefined {
+    if (!this.documents || this.documents.length === 0) {
+      this.getDocuments().subscribe((documents: document[]) => {
+        return documents.find(doc => doc.id === id);
+      });
     }
+    return this.documents.find(doc => doc.id === id);
   }
 
   sortDocuments() {
