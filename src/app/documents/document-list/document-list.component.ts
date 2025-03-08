@@ -17,8 +17,11 @@ export class DocumentListComponent implements OnInit, OnDestroy{
   ngOnInit() {
     this.documentService.getDocuments().subscribe(
       (documents: document[]) => {
-        this.documents = documents;
-        this.documentService.sortDocuments();
+        this.documents = documents; 
+        this.documentService.documentChangedEvent.next(this.documents.slice()); 
+      },
+      (error: any) => {
+        console.error('Error fetching documents:', error); // Handle the error
       }
     );
   }

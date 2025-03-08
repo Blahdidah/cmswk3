@@ -3,6 +3,8 @@ import { document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,13 +16,26 @@ export class DocumentService {
   private maxDocumentId: number;
   
   constructor(private http: HttpClient) { 
-    this.documents = MOCKDOCUMENTS;
+    // this.documents = MOCKDOCUMENTS;
     this.maxDocumentId = this.getMaxId();
   }
 
-  getDocuments() {
+  getDocuments(): Observable<document[]> {
     return this.http.get<document[]>('https://blahs-doc-contacts-default-rtdb.firebaseio.com/documents.json')
+      .pipe(
+        map((documents: document[]) => {
+          this.maxDocumentId = this.getMaxId();
+          documents.sort((a, b) => a.name.localeCompare(b.name));
+          this.documentChangedEvent.next(documents);
+          return documents; // Return the processed documents
+        })
+      );
   }
+
+  emitDocumentsChanged(documents: document[]) {
+    this.documentChangedEvent.next(documents);
+  }
+
 
   getDocument(id: string): document{
     for (let document of this.documents) {
