@@ -40,7 +40,7 @@ export class DocumentService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const documentsJson = JSON.stringify(this.documents);
 
-    this.http.put('https://your-firebase-url/documents.json', documentsJson, { headers })
+    this.http.put('https://blahs-doc-contacts-default-rtdb.firebaseio.com/documents.json', documentsJson, { headers })
       .subscribe(() => {
         this.documentChangedEvent.next(this.documents.slice());
       });
@@ -63,7 +63,9 @@ export class DocumentService {
   }
 
   addDocument(newDocument: document) {
+    newDocument.id = (this.maxDocumentId + 1).toString(); // Assign a new ID
     this.documents.push(newDocument);
+    this.maxDocumentId = this.getMaxId(); // Update the maxDocumentId
     this.storeDocuments();
   }
 
