@@ -19,8 +19,4 @@ export class MessageItemComponent implements OnInit{
     this.messageSender = contact.name;
   }
   
-  // onSelected() {
-  //   this.messageSelected.emit();
-  // }
-
 }
