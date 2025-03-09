@@ -90,6 +90,9 @@ export class DocumentService {
     const pos = this.documents.findIndex(d => d.id === originalDocument.id);
     if (pos < 0) return;
 
+    // Ensure that we are not removing or overwriting the ID field
+    newDocument.id = originalDocument.id; // Preserve the original ID
+
     this.documents[pos] = newDocument;
     this.storeDocuments();
   }
