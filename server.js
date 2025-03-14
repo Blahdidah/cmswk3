@@ -14,11 +14,6 @@ var contactsRoutes = require('./server/routes/contacts');
 
 var app = express(); // create an instance of express
 
-app.use('/', index);
-app.use('/documents', documentsRoutes);
-app.use('/messages', messagesRoutes);
-app.use('/contacts', contactsRoutes);
-
 // Tell express to use the following parsers for POST data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -42,18 +37,23 @@ app.use((req, res, next) => {
   next();
 });
 
+
+// Tell express to map the default route ('/') to the index route
+// app.use('/', index);
+app.use('api/documents', documentsRoutes);
+app.use('api/messages', messagesRoutes);
+app.use('api/contacts', contactsRoutes);
 // Tell express to use the specified director as the
 // root directory for your web site
 app.use(express.static(path.join(__dirname, 'dist/cms')));
 
-// Tell express to map the default route ('/') to the index route
-app.use('/', index);
-
-// ... ADD YOUR CODE TO MAP YOUR URL'S TO ROUTING FILES HERE ...
-
 // Tell express to map all other non-defined routes back to the index page
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/cms/index.html'));
+  if (req.originalUrl.startsWith('/api')) {
+    res.status(404).json({ message: 'API endpoint not found' });
+  } else {
+    res.sendFile(path.join(__dirname, 'dist/cms/index.html'));
+  }
 });
 
 // Define the port address and tell express to use this port
