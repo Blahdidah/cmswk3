@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const SequenceGenerator = require('./sequenceGenerator');
 
 router.get('/', (req, res, next) => {
     res.json({ message: 'GET all contacts' });
@@ -10,7 +11,28 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    res.json({ message: 'POST new contact', data: req.body });
+    const newId = SequenceGenerator.nextId('contacts');
+
+    const contact = new Contact({
+        id: newId.toString(),
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone
+    });
+
+    contact.save()
+        .then(createdContact => {
+            res.status(201).json({
+                message: 'Contact added successfully',
+                newContact: createdContact
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: 'Creating a contact failed!',
+                error: error
+            });
+        });
 });
 
 router.put('/', (req, res, next) => {

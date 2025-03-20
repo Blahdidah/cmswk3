@@ -5,6 +5,7 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 
 // import the routing file to handle the default (index) route
 var index = require('./server/routes/app');
@@ -43,6 +44,18 @@ app.use((req, res, next) => {
 app.use('api/documents', documentsRoutes);
 app.use('api/messages', messagesRoutes);
 app.use('api/contacts', contactsRoutes);
+//establish a connection to the mongoDB database
+mongoose.connect('mongodb://localhost:27017/cms', { 
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => {
+    console.log('Connected to database!');
+  })
+  .catch((err) => {
+    console.log('Connection failed: ' + err);
+  });
+
 // Tell express to use the specified director as the
 // root directory for your web site
 app.use(express.static(path.join(__dirname, 'dist/cms')));

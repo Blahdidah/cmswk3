@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const SequenceGenerator = require('./sequenceGenerator');
 
 // Sample response for documents route
 router.get('/', (req, res, next) => {
@@ -10,8 +11,29 @@ router.get(':/id', (req, res) => {
     res.json({ message: `GET document with ID: ${req.params.id}` })
 });
 
-router.post('/', (req, res) => {
-    res.json({ message: 'POST new document', data: req.body });
+router.post('/', (req, res, next) => {
+    const newId = SequenceGenerator.nextId('documents');
+
+    const document = new Document({
+        id: newId.toString(),
+        name: req.body.name,
+        url: req.body.url,
+        description: req.body.description
+    });
+
+    document.save()
+        .then(createdDocument => {
+            res.status(201).json({
+                message: 'Document added successfully',
+                newDocument: createdDocument
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: 'Creating a document failed!',
+                error: error
+            });
+        });
 });
 
 router.put('/:id', (req, res) => {
