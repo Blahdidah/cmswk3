@@ -1,6 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { message } from './message.model';
-import { MOCKMESSAGES } from './MOCKMESSAGES';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -9,15 +8,15 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class MessageService {
-  private messages: message[] = []
+  private messages: message[] = [];
   private maxMessageId: number;
   messageChangedEvent = new EventEmitter<message[]>();
 
   constructor(private http: HttpClient) {
-    this.messages = MOCKMESSAGES;
     this.maxMessageId = this.getMaxId();
   }
 
+  // Get maximum message ID
   getMaxId(): number {
     let maxId = 0;
     for (let msg of this.messages) {
@@ -29,8 +28,9 @@ export class MessageService {
     return maxId;
   }
 
+  // Fetch messages from the Node.js server
   getMessages(): Observable<message[]> {
-    return this.http.get<message[]>('https://blahs-doc-contacts-default-rtdb.firebaseio.com/messages.json')
+    return this.http.get<message[]>('http://localhost:3000/api/messages')
       .pipe(
         map((messages: message[]) => {
           this.maxMessageId = this.getMaxId();
@@ -42,32 +42,41 @@ export class MessageService {
       );
   }
 
+  // Emit changes to the message list
   emitMessagesChanged(messages: message[]) {
     this.messageChangedEvent.next(messages);
   }
 
-  getMessage(id: string): message | undefined {
-    if (!this.messages || this.messages.length === 0) {
-      this.getMessages().subscribe((messages: message[]) => {
-        return messages.find(cont => cont.id === id);
-      })
-    }
-    return this.messages.find(cont => cont.id === id);
+  // Fetch a single message by ID
+  getMessage(id: string): Observable<message> {
+    return this.http.get<message>(`http://localhost:3000/api/messages/${id}`);
   }
 
+  // Add a new message
   addMessage(newMessage: message) {
-    this.messages.push(newMessage);
-    this.storeMessages();
+    newMessage.id = (this.maxMessageId + 1).toString(); // Ensure ID is set
+    this.http.post<{ message: string, data: message }>('http://localhost:3000/api/messages', newMessage)
+      .subscribe((responseData) => {
+        this.messages.push(responseData.data);
+        this.messageChangedEvent.next(this.messages.slice());
+      });
   }
 
+  // Store messages (not necessary for local array anymore, handled via HTTP)
   storeMessages() {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const messagesJson = JSON.stringify(this.messages);
-
-    this.http.put('https://blahs-doc-contacts-default-rtdb.firebaseio.com/messages.json', messagesJson, { headers })
+    this.http.put('http://localhost:3000/api/messages', this.messages, { headers })
       .subscribe(() => {
         this.messageChangedEvent.next(this.messages.slice());
       });
   }
 
+  // Delete a message
+  deleteMessage(message: message) {
+    this.http.delete(`http://localhost:3000/api/messages/${message.id}`)
+      .subscribe(() => {
+        this.messages = this.messages.filter(m => m.id !== message.id);
+        this.messageChangedEvent.next(this.messages);
+      });
+  }
 }

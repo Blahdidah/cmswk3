@@ -5,7 +5,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -16,57 +15,60 @@ export class ContactsService {
   private maxContactId: number;
 
   constructor(private http: HttpClient) {
-    // this.contacts = MOCKCONTACTS;
     this.maxContactId = this.getMaxId();
   }
-  
+
+  // Fetch contacts from the Node.js server
   getContacts(): Observable<Contact[]> {
-     return this.http.get<Contact[]>('https://blahs-doc-contacts-default-rtdb.firebaseio.com/contacts.json')
-          .pipe(
-            map((contacts: Contact[]) => {
-              this.contacts = contacts;  
-              this.maxContactId = this.getMaxId();
-              contacts.sort((a, b) => a.name.localeCompare(b.name));
-              this.contactChangedEvent.next(contacts);
-              return contacts; 
-            })
-          );
+    return this.http.get<Contact[]>('http://localhost:3000/api/contacts')
+      .pipe(
+        map((contacts: Contact[]) => {
+          this.contacts = contacts;
+          this.maxContactId = this.getMaxId();
+          contacts.sort((a, b) => a.name.localeCompare(b.name));
+          this.contactChangedEvent.next(contacts);
+          return contacts;
+        })
+      );
   }
-  
+
+  // Emit changes to the contact list
   emitContactsChanged(contacts: Contact[]) {
     this.contactChangedEvent.next(contacts);
   }
 
-  getContact(id: string): Contact | undefined {
-    if (!this.contacts || this.contacts.length === 0) {
-      this.getContacts().subscribe((contacts: Contact[]) => {
-        return contacts.find(cont => cont.id === id);
-      })
-    }
-    return this.contacts.find(cont => cont.id === id);
+  // Get a single contact by ID from the array (use the API to get it)
+  getContact(id: string): Observable<Contact> {
+    return this.http.get<Contact>(`http://localhost:3000/api/contacts/${id}`);
   }
 
+  // Sort the contacts locally
   sortContacts() {
     this.contacts.sort((a, b) => {
       return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
     });
   }
 
+  // Store contacts (this is no longer needed for your local array, just handle through HTTP)
   storeContacts() {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const contactsJson = JSON.stringify(this.contacts);
 
-    this.http.put('https://blahs-doc-contacts-default-rtdb.firebaseio.com/contacts.json', contactsJson, { headers })
+    this.http.put('http://localhost:3000/api/contacts', this.contacts, { headers })
       .subscribe(() => {
         this.contactChangedEvent.next(this.contacts.slice());
       });
   }
 
-  deleteContact(contact: Contact) { 
-    this.contacts = this.contacts.filter(d => d.id !== contact.id);
-    this.storeContacts();
+  // Delete a contact
+  deleteContact(contact: Contact) {
+    this.http.delete(`http://localhost:3000/api/contacts/${contact.id}`)
+      .subscribe(() => {
+        this.contacts = this.contacts.filter(c => c.id !== contact.id);
+        this.contactChangedEvent.next(this.contacts);
+      });
   }
 
+  // Get the maximum contact ID
   getMaxId(): number {
     let maxId = 0;
     for (let contact of this.contacts) {
@@ -78,13 +80,18 @@ export class ContactsService {
     return maxId;
   }
 
-  addContact(newContact: Contact) { 
+  // Add a contact (use the API to add a new contact)
+  addContact(newContact: Contact) {
     newContact.id = (this.maxContactId + 1).toString();
-    this.contacts.push(newContact);
-    this.maxContactId = this.getMaxId();
-    this.storeContacts();
+
+    this.http.post<{ message: string, contact: Contact }>('http://localhost:3000/api/contacts', newContact)
+      .subscribe((responseData) => {
+        this.contacts.push(responseData.contact);
+        this.contactChangedEvent.next(this.contacts.slice());
+      });
   }
 
+  // Update a contact (use the API to update a contact)
   updateContact(originalContact: Contact, newContact: Contact) {
     const pos = this.contacts.findIndex(d => d.id === originalContact.id);
     if (pos < 0) return;
@@ -92,8 +99,10 @@ export class ContactsService {
     // Ensure that we are not removing or overwriting the ID field
     newContact.id = originalContact.id; // Preserve the original ID
 
-    this.contacts[pos] = newContact;
-    this.storeContacts();
+    this.http.put(`http://localhost:3000/api/contacts/${originalContact.id}`, newContact)
+      .subscribe(() => {
+        this.contacts[pos] = newContact;
+        this.contactChangedEvent.next(this.contacts.slice());
+      });
   }
-
 }

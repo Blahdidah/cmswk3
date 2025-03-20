@@ -9,14 +9,14 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./contact-list.component.css']
 })
 
-export class ContactListComponent implements OnInit, OnDestroy{
+export class ContactListComponent implements OnInit, OnDestroy {
   contacts: Contact[] = [];
   private subscription; Subscription
 
   constructor(private contactService: ContactsService) { }
   
   ngOnInit() {
-    this.contactService.getContacts().subscribe(
+    this.subscription = this.contactService.getContacts().subscribe(
       (contacts: Contact[]) => {
         this.contacts = contacts;
         this.contactService.contactChangedEvent.next(this.contacts.slice());
@@ -34,6 +34,8 @@ export class ContactListComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }

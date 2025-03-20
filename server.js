@@ -41,11 +41,11 @@ app.use((req, res, next) => {
 
 // Tell express to map the default route ('/') to the index route
 // app.use('/', index);
-app.use('api/documents', documentsRoutes);
-app.use('api/messages', messagesRoutes);
-app.use('api/contacts', contactsRoutes);
+app.use('/api/documents', documentsRoutes);
+app.use('/api/messages', messagesRoutes);
+app.use('/api/contacts', contactsRoutes);
 //establish a connection to the mongoDB database
-mongoose.connect('mongodb://localhost:27017/cms', { 
+mongoose.connect('mongodb://localhost:27017/CMS', { 
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

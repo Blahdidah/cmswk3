@@ -28,7 +28,9 @@ export class DocumentDetailComponent implements OnInit{
       .subscribe(
         (params: Params) => {
           this.id = params['id'];
-          this.document = this.documentService.getDocument(this.id);
+          this.documentService.getDocument(this.id).subscribe((document: document) => {
+            this.document = document;
+          });
         }
       );
   }
