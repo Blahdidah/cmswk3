@@ -66,4 +66,4 @@ class SequenceGenerator {
   }
 }
 
-module.exports = new SequenceGenerator();
+module.exports = SequenceGenerator;
