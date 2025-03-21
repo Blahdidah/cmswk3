@@ -11,6 +11,7 @@ export class MessageService {
   private messages: message[] = [];
   private maxMessageId: number;
   messageChangedEvent = new EventEmitter<message[]>();
+  private apiUrl = 'http://localhost:3000/api/messages'
 
   constructor(private http: HttpClient) {
     this.maxMessageId = this.getMaxId();
@@ -53,14 +54,10 @@ export class MessageService {
   }
 
   // Add a new message
-  addMessage(newMessage: message) {
-    newMessage.id = (this.maxMessageId + 1).toString(); // Ensure ID is set
-    this.http.post<{ message: string, data: message }>('http://localhost:3000/api/messages', newMessage)
-      .subscribe((responseData) => {
-        this.messages.push(responseData.data);
-        this.messageChangedEvent.next(this.messages.slice());
-      });
-  }
+  addMessage(newMessage: message): Observable<message> {
+    return this.http.post<message>(this.apiUrl, newMessage);
+      };
+  
 
   // Store messages (not necessary for local array anymore, handled via HTTP)
   storeMessages() {

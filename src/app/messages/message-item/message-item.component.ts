@@ -17,6 +17,7 @@ export class MessageItemComponent implements OnInit {
   
   // @Output() messageSelected = new EventEmitter<void>();
   ngOnInit() {
+    console.log(this.message);
     // Check if this.message and this.message.sender are defined and if sender is not null
     if (!this.message || !this.message.sender) {
       console.error('Message or sender is undefined:', this.message);

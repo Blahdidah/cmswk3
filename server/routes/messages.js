@@ -47,21 +47,21 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const { subject, msgText, sender } = req.body;
 
-    // Get the next ID for the messages collection
-    const nextMessageId = sequenceGenerator.nextId('messages');
-
-    if (nextMessageId === -1) {
-        return res.status(400).json({ message: 'Error generating ID for the message' });
-    }
-
-    const newMessage = new Message({
-        id: nextMessageId,  // Assign the generated ID
-        subject,
-        msgText,
-        sender
-    });
-
     try {
+        // Get the next ID for the messages collection (ensure it returns a string)
+        const nextMessageId = await sequenceGenerator.nextId('messages');
+
+        if (nextMessageId === -1) {
+            return res.status(400).json({ message: 'Error generating ID for the message' });
+        }
+
+        const newMessage = new Message({
+            id: nextMessageId,  // Assign the generated ID as a string
+            subject,
+            msgText,
+            sender
+        });
+
         const savedMessage = await newMessage.save();
         res.status(201).json(savedMessage);
     } catch (err) {
