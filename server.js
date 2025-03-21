@@ -13,6 +13,10 @@ var documentsRoutes = require('./server/routes/documents');
 var messagesRoutes = require('./server/routes/messages');
 var contactsRoutes = require('./server/routes/contacts');
 
+// Import SequenceGenerator
+const SequenceGenerator = require('./server/routes/sequenceGenerator');
+const sequenceGenerator = new SequenceGenerator();
+
 var app = express(); // create an instance of express
 
 // Tell express to use the following parsers for POST data
@@ -51,13 +55,25 @@ mongoose.connect('mongodb://localhost:27017/CMS', {
 })
   .then(() => {
     console.log('Connected to database!');
+
+    // Initialize SequenceGenerator after DB connection
+    sequenceGenerator.init().then(() => {
+      console.log('Sequence Generator initialized.');
+
+      // Now set up your routes
+      app.use('/api/documents', documentsRoutes);
+      app.use('/api/messages', messagesRoutes);
+      app.use('/api/contacts', contactsRoutes);
+    }).catch(err => {
+      console.error('Error initializing sequence generator:', err);
+    });
+
   })
   .catch((err) => {
     console.log('Connection failed: ' + err);
   });
 
-// Tell express to use the specified director as the
-// root directory for your web site
+// Tell express to use the specified director as the root directory for your web site
 app.use(express.static(path.join(__dirname, 'dist/cms')));
 
 // Tell express to map all other non-defined routes back to the index page
@@ -73,10 +89,10 @@ app.get('*', (req, res) => {
 const port = process.env.PORT || '3000';
 app.set('port', port);
 
-// Create HTTP server.
+// Create HTTP server
 const server = http.createServer(app);
 
 // Tell the server to start listening on the provided port
-server.listen(port, function() {
+server.listen(port, function () {
   console.log('API running on localhost: ' + port)
 });

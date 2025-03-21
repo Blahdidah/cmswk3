@@ -45,7 +45,7 @@ export class DocumentService {
   // Add a new document to the server
   addDocument(newDocument: document) {
     newDocument.id = (this.maxDocumentId + 1).toString(); // Ensure ID is set
-    this.http.post<{ message: string, document: document }>('http://localhost:3000/api/documents', newDocument)
+    this.http.post<{document: document }>('http://localhost:3000/api/documents', newDocument)
       .subscribe((responseData) => {
         this.documents.push(responseData.document);
         this.documentChangedEvent.next(this.documents.slice());

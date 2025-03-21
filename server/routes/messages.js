@@ -1,22 +1,40 @@
 var express = require('express');
 var router = express.Router();
 const Message = require('../models/message')
+const Contact = require('../models/contact')
 const SequenceGenerator = require('./sequenceGenerator');
 
 var sequenceGenerator = new SequenceGenerator();
 
 router.get('/', async (req, res) => {
     try {
-        const messages = await Message.find();
-        res.status(200).json(messages);
+        const messages = await Message.find().lean();
+
+        try {
+            const contacts = await Contact.find();
+
+            messages.forEach(message => {
+                const senderContact = contacts.find(contact => contact.id === message.sender);
+                if (senderContact) {
+                    message.sender = senderContact;
+                }
+            });
+
+            res.status(200).json(messages);
+        } catch (err) {
+            console.error("Error fetching contacts:", err);
+            res.status(500).json({ message: "Error fetching contacts", error: err });
+        }
+
     } catch (err) {
+        console.error("Error fetching messages:", err);
         res.status(500).json({ message: "Error fetching messages", error: err });
     }
 });
 
 router.get('/:id', async (req, res) => {
     try {
-        const message = await Message.findById(req.params.id);
+        const message = await Message.findOne({id: req.params.id });
         if (!message) {
             return res.status(404).json({ message: 'Message not found' });
         }
@@ -71,7 +89,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        const deletedMessage = await Message.findByIdAndDelete(req.params.id);
+        const deletedMessage = await Message.findByIdAndDelete({ id: req.params.id });
         if (!deletedMessage) {
             return res.status(404).json({ message: 'Message not found' });
         }

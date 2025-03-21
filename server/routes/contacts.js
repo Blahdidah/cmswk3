@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        const contact = await Contact.findById(req.params.id).populate('group');  // Populate the 'group' field for a specific contact
+        const contact = await Contact.findOne({ id: req.params.id }).populate('group');  // Populate the 'group' field for a specific contact
         if (!contact) {
             return res.status(404).json({ message: 'Contact not found' });
         }
@@ -74,7 +74,7 @@ router.put('/:id', async (req, res) => {
 // Delete a contact
 router.delete('/:id', async (req, res) => {
     try {
-        const deletedContact = await Contact.findByIdAndDelete(req.params.id);
+        const deletedContact = await Contact.findOneAndDelete({ id: req.params.id });
         if (!deletedContact) {
             return res.status(404).json({ message: 'Contact not found' });
         }

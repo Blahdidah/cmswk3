@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +40,10 @@ export class ContactsService {
 
   // Get a single contact by ID from the array (use the API to get it)
   getContact(id: string): Observable<Contact> {
+    if (!id || typeof id !== 'string') {
+      console.error("Invalid contact ID:", id);
+      return throwError(() => new Error("Invalid contact ID"));
+    }
     return this.http.get<Contact>(`http://localhost:3000/api/contacts/${id}`);
   }
 
