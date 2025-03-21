@@ -27,23 +27,23 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { name, email, phone, group } = req.body;  // Assuming `group` is passed in the request body as an array of ObjectIds
-
-    const nextContactId = sequenceGenerator.nextId('contacts');
-
-    if (nextContactId === -1) {
-        return res.status(400).json({ message: 'Error generating ID for the contact' });
-    }
-
-    const newContact = new Contact({
-        id: nextContactId,
-        name,
-        email,
-        phone,
-        group  // Set the group reference to the passed ObjectId array
-    });
-
     try {
+        const { name, email, phone, group } = req.body;
+
+        const nextContactId = await sequenceGenerator.nextId('contacts'); // Ensure it's resolved
+
+        if (!nextContactId) {
+            return res.status(400).json({ message: 'Error generating ID for the contact' });
+        }
+
+        const newContact = new Contact({
+            id: nextContactId,  // Now it's a resolved string
+            name,
+            email,
+            phone,
+            group
+        });
+
         const savedContact = await newContact.save();
         res.status(201).json(savedContact);
     } catch (err) {

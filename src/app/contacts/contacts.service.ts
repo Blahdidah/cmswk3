@@ -24,11 +24,13 @@ export class ContactsService {
     return this.http.get<Contact[]>('http://localhost:3000/api/contacts')
       .pipe(
         map((contacts: Contact[]) => {
-          this.contacts = contacts;
-          this.maxContactId = this.getMaxId();
-          contacts.sort((a, b) => a.name.localeCompare(b.name));
-          this.contactChangedEvent.next(contacts);
-          return contacts;
+          // Ensure each contact has a valid 'id' (not '_id')
+          this.contacts = contacts.map(contact => ({
+            ...contact,
+            id: contact.id || ''  // Ensure 'id' exists
+          }));
+          this.contactChangedEvent.next(this.contacts);
+          return this.contacts;
         })
       );
   }
@@ -87,10 +89,14 @@ export class ContactsService {
 
   // Add a contact (use the API to add a new contact)
   addContact(newContact: Contact) {
-    newContact.id = (this.maxContactId + 1).toString();
-
-    this.http.post<{ message: string, contact: Contact }>('http://localhost:3000/api/contacts', newContact)
+    this.http.post<{ message: string, contact: Contact }>(
+      'http://localhost:3000/api/contacts',
+      newContact
+    )
       .subscribe((responseData) => {
+        if (!responseData.contact.id) {
+          console.error("Error: New contact is missing 'id'");
+        }
         this.contacts.push(responseData.contact);
         this.contactChangedEvent.next(this.contacts.slice());
       });
